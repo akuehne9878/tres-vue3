@@ -1,7 +1,5 @@
 {
   "parameters": [
-    { "name": "length", "value": 400, "unit": "mm" },
-    { "name": "width", "value": 500, "unit": "mm" },
     { "name": "thickness", "value": 19, "unit": "mm" },
     { "name": "back_thickness", "value": 5, "unit": "mm" },
     { "name": "x", "value": 0, "unit": "mm" },
