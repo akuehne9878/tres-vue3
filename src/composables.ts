@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { BoxGeometry, CylinderGeometry, BufferGeometry, EdgesGeometry, LineBasicMaterial, Line, Vector3, Float32BufferAttribute } from 'three'; // Direkt aus 'three' importieren
+import { BoxGeometry, CylinderGeometry, BufferGeometry, EdgesGeometry, LineBasicMaterial, Line, Vector3, Float32BufferAttribute, MeshBasicMaterial, Mesh } from 'three';
 import { Assembly, Part, Parameter, Model, Geometry } from './types';
 
 export const model = ref<Model>();
@@ -32,7 +32,11 @@ export const computeArgs = (geometry: Geometry | undefined): any[] => {
         if (Array.isArray(arg)) {
             return arg.map(innerArg => (typeof innerArg === 'string' ? eval(replaceParameters(innerArg)) : innerArg));
         }
-        return typeof arg === 'string' ? eval(replaceParameters(arg)) : arg;
+
+        if (typeof arg === 'string' && arg.includes('$')) {
+            return eval(replaceParameters(arg));
+        }
+        return arg;
     }) || [];
 };
 
@@ -65,7 +69,7 @@ export const createGeometry = (geometryReference: string) : BufferGeometry => {
         case 'Cylinder':
             return new CylinderGeometry(...args);
         default:
-            return new BoxGeometry(...args); // Default zu BoxGeometry
+            return new BoxGeometry(...args);
     }
 };
 
@@ -76,5 +80,6 @@ export const createLineGeometry = (geometryReference: string) => {
     const lineGeometry = new BufferGeometry().setFromPoints(points);
     return new Line(lineGeometry, new LineBasicMaterial({ color: 0x0000ff }));
 };
+
 
 export const lineMaterial = new LineBasicMaterial({ color: 0x000000 });

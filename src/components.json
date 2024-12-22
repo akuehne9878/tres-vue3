@@ -28,6 +28,10 @@
         ["${x} + (${cabinet_width}/2) + 50", "${y}", "${z}"],
         ["${x} + (${cabinet_width}/2) + 50", "${cabinet_height}", 0]
       ]
+    },
+    "E": {
+      "geometry": "Text",
+      "args": ["Sample Text", 100, 10]
     }
   },
   "assembly": {
@@ -68,9 +72,13 @@
         "geometryReference": "D",
         "position": [0, 0, 0],
         "rotation": [0, 0, 0]
+      },
+      { 
+        "id": "beschriftung", 
+        "geometryReference": "E", 
+        "position": [0, 0, 0], 
+        "rotation": [0, 0, 90] 
       }
     ]
-
-
   }
 }

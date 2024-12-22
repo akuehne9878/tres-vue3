@@ -6,7 +6,7 @@
     <TresDirectionalLight :position="[1000, 1000, 500]" intensity="0.8" />
 
     <template v-for="part in model?.assembly.parts" :key="part.id">
-      <TresMesh v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'"
+      <TresMesh v-if="getGeometry(part.geometryReference)?.geometry !== 'Line' && getGeometry(part.geometryReference)?.geometry !== 'Text'"
         :object="createGeometry(part.geometryReference)" :position="computePosition(part.position)"
         :rotation="degreesToRadians(part.rotation)">
         <TresBoxGeometry :args="computeArgs(getGeometry(part.geometryReference))" />
@@ -17,6 +17,13 @@
         :object="createLineGeometry(part.geometryReference)" :position="computePosition(part.position)"
         :rotation="degreesToRadians(part.rotation)">
       </primitive>
+      <Suspense>
+        <Text3D v-if="getGeometry(part.geometryReference)?.geometry === 'Text'" :font="fontPath"
+        :text="getGeometry(part.geometryReference)?.args[0]" :position="computePosition(part.position)"
+        :rotation="degreesToRadians(part.rotation)" :size="getGeometry(part.geometryReference)?.args[1]"
+        :height="getGeometry(part.geometryReference)?.args[2]" color="black">
+      </Text3D>
+    </Suspense>
     </template>
 
     <TresAxesHelper :args="[1000]" />
@@ -26,8 +33,11 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { TresCanvas } from '@tresjs/core';
-import { OrbitControls } from '@tresjs/cientos';
+import { OrbitControls, Text3D } from '@tresjs/cientos';
 import { loadModel, getGeometry, computeArgs, computePosition, degreesToRadians, getEdgesGeometry, createGeometry, createLineGeometry, lineMaterial, model } from './composables';
+
+
+const fontPath = '/src/assets/FiraCodeRegular.json'
 
 onMounted(() => {
   loadModel('/src/components.json');
