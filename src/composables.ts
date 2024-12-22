@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { BoxGeometry, CylinderGeometry, BufferGeometry, EdgesGeometry, LineBasicMaterial, Line, Vector3, Float32BufferAttribute } from 'three'; // Direkt aus 'three' importieren
-import { Assembly, Part, Parameter, Model } from './types';
+import { Assembly, Part, Parameter, Model, Geometry } from './types';
 
 export const model = ref<Model>();
 
@@ -27,10 +27,15 @@ export const replaceParameters = (str: string) => {
     });
 };
 
-export const computeArgs = (geometryReference: string): any[] => {
-    const geometry = getGeometry(geometryReference);
-    return geometry?.args.map(arg => (typeof arg === 'string' ? eval(replaceParameters(arg)) : arg)) || [];
+export const computeArgs = (geometry: Geometry | undefined): any[] => {
+    return geometry?.args.map(arg => {
+        if (Array.isArray(arg)) {
+            return arg.map(innerArg => (typeof innerArg === 'string' ? eval(replaceParameters(innerArg)) : innerArg));
+        }
+        return typeof arg === 'string' ? eval(replaceParameters(arg)) : arg;
+    }) || [];
 };
+
 
 export const computePosition = (pos: (number | string)[]): [number, number, number] => {
     return pos.map(p =>
@@ -47,13 +52,13 @@ export const getEdgesGeometry = (geometryReference: string) => {
     return new EdgesGeometry(geometry);
 };
 
-export const getGeometry = (geometryReference: string) => {
+export const getGeometry = (geometryReference: string) : Geometry | undefined => {
     return model.value?.geometries[geometryReference];
 }
 
 export const createGeometry = (geometryReference: string) : BufferGeometry => {
     const geometry = getGeometry(geometryReference);
-    const args = computeArgs(geometryReference);
+    const args = computeArgs(geometry);
     switch (geometry?.geometry) {
         case 'Box':
             return new BoxGeometry(...args);
@@ -66,7 +71,8 @@ export const createGeometry = (geometryReference: string) : BufferGeometry => {
 
 export const createLineGeometry = (geometryReference: string) => {
     const geometry = getGeometry(geometryReference);
-    const points = geometry?.args.map((coord: number[]) => new Vector3(...coord)) || [];
+    const args = computeArgs(geometry);
+    const points = args.map((coord: number[]) => new Vector3(...coord)) || [];
     const lineGeometry = new BufferGeometry().setFromPoints(points);
     return new Line(lineGeometry, new LineBasicMaterial({ color: 0x0000ff }));
 };

@@ -25,8 +25,8 @@
     "D": {
       "geometry": "Line",
       "args": [
-        [0, 0, 0],
-        [1000, 1000, 1000]
+        ["${x} + (${cabinet_width}/2) + 50", "${y}", "${z}"],
+        ["${x} + (${cabinet_width}/2) + 50", "${cabinet_height}", 0]
       ]
     }
   },

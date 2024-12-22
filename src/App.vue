@@ -1,5 +1,5 @@
 <template>
-  <TresCanvas window-size preset="flat">
+  <TresCanvas window-size preset="realistic">
     <OrbitControls />
     <TresPerspectiveCamera :position="[1200, 1000, 1500]" :look-at="[0, 400, 250]" :far="5000" />
     <TresAmbientLight intensity="0.7" />
@@ -12,7 +12,7 @@
         :position="computePosition(part.position)"
         :rotation="degreesToRadians(part.rotation)"
       >
-        <TresBoxGeometry v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'" :args="computeArgs(part.geometryReference)" />
+        <TresBoxGeometry v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'" :args="computeArgs(getGeometry(part.geometryReference))" />
         <TresMeshStandardMaterial v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'" color="#D2B48C" />
       </component>
       <TresLineSegments v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'"
