@@ -68,22 +68,26 @@
         "rotation": [0, 0, 90]
       }
     ],
+    "position": ["${x}", "${y}", "${z}"],
+    "rotation": [0, 0, 0],
     "children": [{
         "name": "bemaßung",
         "parts": [
           {
-            "id": "test",
+            "id": "line",
             "geometryReference": "D",
             "position": [0, 0, 0],
-            "rotation": [0, 0, 0]
+            "rotation": [0, 0, 90]
           },
           { 
             "id": "beschriftung", 
             "geometryReference": "E", 
             "position": [0, 0, 0], 
-            "rotation": [0, 0, 90] 
+            "rotation": [0, 0, 0] 
           }
-        ]
+        ],
+        "position": ["${x}", "${y}", "${z}"],
+        "rotation": [0, 0, 90]
     }]
   }
 }

@@ -1,5 +1,5 @@
 <template>
-    <TresGroup>
+    <TresGroup :position="computePosition(assembly.position)" :rotation="degreesToRadians(assembly.rotation)" >
         <template v-for="part in assembly.parts" :key="part.id">
             <TresMesh
                 v-if="getGeometry(part.geometryReference)?.geometry !== 'Line' && getGeometry(part.geometryReference)?.geometry !== 'Text'"

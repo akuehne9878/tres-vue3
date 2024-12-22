@@ -13,7 +13,7 @@ export interface Part {
   id: string;
   geometryReference: string;
   position: (number | string)[];
-  rotation: number[];
+  rotation: (number | string)[];
 }
 
 export interface Assembly {
@@ -26,4 +26,6 @@ export interface Model {
   parameters: Parameter[];
   geometries: Record<string, Geometry>;
   assembly: Assembly;
+  position: (number | string)[];
+  rotation: (number | string)[];
 }
