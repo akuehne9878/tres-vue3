@@ -6,21 +6,17 @@
     <TresDirectionalLight :position="[1000, 1000, 500]" intensity="0.8" />
 
     <template v-for="part in model?.assembly.parts" :key="part.id">
-      <component
-        :is="getGeometry(part.geometryReference)?.geometry === 'Line' ? 'primitive' : 'TresMesh'"
-        :object="getGeometry(part.geometryReference)?.geometry === 'Line' ? createLineGeometry(part.geometryReference) : createGeometry(part.geometryReference)"
-        :position="computePosition(part.position)"
-        :rotation="degreesToRadians(part.rotation)"
-      >
-        <TresBoxGeometry v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'" :args="computeArgs(getGeometry(part.geometryReference))" />
-        <TresMeshStandardMaterial v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'" color="#D2B48C" />
-      </component>
-      <TresLineSegments v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'"
-        :geometry="getEdgesGeometry(part.geometryReference)"
-        :material="lineMaterial"
-        :position="computePosition(part.position)"
-        :rotation="degreesToRadians(part.rotation)"
-      />
+      <TresMesh v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'"
+        :object="createGeometry(part.geometryReference)" :position="computePosition(part.position)"
+        :rotation="degreesToRadians(part.rotation)">
+        <TresBoxGeometry :args="computeArgs(getGeometry(part.geometryReference))" />
+        <TresMeshStandardMaterial color="#D2B48C" />
+        <TresLineSegments :geometry="getEdgesGeometry(part.geometryReference)" :material="lineMaterial" />
+      </TresMesh>
+      <primitive v-if="getGeometry(part.geometryReference)?.geometry === 'Line'"
+        :object="createLineGeometry(part.geometryReference)" :position="computePosition(part.position)"
+        :rotation="degreesToRadians(part.rotation)">
+      </primitive>
     </template>
 
     <TresAxesHelper :args="[1000]" />
@@ -44,4 +40,3 @@ onMounted(() => {
   height: 100vh;
 }
 </style>
-
