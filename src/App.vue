@@ -5,13 +5,22 @@
     <TresAmbientLight intensity="0.7" />
     <TresDirectionalLight :position="[1000, 1000, 500]" intensity="0.8" />
 
-    <template v-for="part in parts" :key="part.id">
-      <TresMesh :position="computePosition(part.position)" :rotation="degreesToRadians(part.rotation)">
-        <TresBoxGeometry :args="computeDimensions(part.part)" />
-        <TresMeshStandardMaterial color="#D2B48C" />
-      </TresMesh>
-      <TresLineSegments :geometry="getEdgesGeometry(computeDimensions(part.part))" :material="lineMaterial"
-        :position="computePosition(part.position)" :rotation="degreesToRadians(part.rotation)" />
+    <template v-for="part in model?.assembly.parts" :key="part.id">
+      <component
+        :is="getGeometry(part.geometryReference)?.geometry === 'Line' ? 'primitive' : 'TresMesh'"
+        :object="getGeometry(part.geometryReference)?.geometry === 'Line' ? createLineGeometry(part.geometryReference) : createGeometry(part.geometryReference)"
+        :position="computePosition(part.position)"
+        :rotation="degreesToRadians(part.rotation)"
+      >
+        <TresBoxGeometry v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'" :args="computeArgs(part.geometryReference)" />
+        <TresMeshStandardMaterial v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'" color="#D2B48C" />
+      </component>
+      <TresLineSegments v-if="getGeometry(part.geometryReference)?.geometry !== 'Line'"
+        :geometry="getEdgesGeometry(part.geometryReference)"
+        :material="lineMaterial"
+        :position="computePosition(part.position)"
+        :rotation="degreesToRadians(part.rotation)"
+      />
     </template>
 
     <TresAxesHelper :args="[1000]" />
@@ -22,10 +31,10 @@
 import { ref, onMounted } from 'vue';
 import { TresCanvas } from '@tresjs/core';
 import { OrbitControls } from '@tresjs/cientos';
-import { loadParts, createParametersMap, computeDimensions, computePosition, degreesToRadians, getEdgesGeometry, lineMaterial, parts } from './composables';
+import { loadModel, getGeometry, computeArgs, computePosition, degreesToRadians, getEdgesGeometry, createGeometry, createLineGeometry, lineMaterial, model } from './composables';
 
 onMounted(() => {
-  loadParts().then(createParametersMap);
+  loadModel('/src/components.json');
 });
 </script>
 
@@ -35,3 +44,4 @@ onMounted(() => {
   height: 100vh;
 }
 </style>
+

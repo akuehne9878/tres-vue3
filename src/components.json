@@ -9,53 +9,68 @@
     { "name": "cabinet_width", "value": 500, "unit": "mm" },
     { "name": "cabinet_depth", "value": 600, "unit": "mm" }
   ],
-  "parts": {
+  "geometries": {
     "A": {
-      "length": "${cabinet_depth}",
-      "width": "${cabinet_width}",
-      "thickness": "${thickness}"
+      "geometry": "Box",
+      "args": ["${cabinet_depth}", "${cabinet_width}", "${thickness}"]
     },
     "B": {
-      "length": "${cabinet_height}",
-      "width": "${cabinet_depth}",
-      "thickness": "${thickness}"
+      "geometry": "Box",
+      "args": ["${cabinet_height}", "${cabinet_depth}", "${thickness}"]
     },
     "C": {
-      "length": "${cabinet_height}",
-      "width": "${cabinet_width} - (2* ${thickness})",
-      "thickness": "${back_thickness}"
+      "geometry": "Box",
+      "args": ["${cabinet_height}", "${cabinet_width} - (2* ${thickness})", "${back_thickness}"]
+    },
+    "D": {
+      "geometry": "Line",
+      "args": [
+        [0, 0, 0],
+        [1000, 1000, 1000]
+      ]
     }
   },
-  "assembly": [
-    {
-      "id": "unterboden",
-      "part": "A",
-      "position": ["${x}", "${y}", "${z}"],
-      "rotation": [90, 0, 90]
-    },
-    {
-      "id": "oberboden",
-      "part": "A",
-      "position": ["${x}", "${y} + ${cabinet_height} + ${thickness}", "${z}"],
-      "rotation": [90, 0, 90]
-    },
-    {
-      "id": "seite_links",
-      "part": "B",
-      "position": ["${x} - (${cabinet_width} /2) + (${thickness} /2)", "${y} + (${cabinet_height} /2) + (${thickness} /2)", "${z}"],
-      "rotation": [0, 90, 90]
-    },
-    {
-      "id": "seite_rechts",
-      "part": "B",
-      "position": ["${x} + (${cabinet_width} /2) - (${thickness} /2)", "${y} + (${cabinet_height} /2) + (${thickness} /2)", "${z}"],
-      "rotation": [0, 90, 90]
-    },
-    {
-      "id": "rückwand",
-      "part": "C",
-      "position": ["${x}", "${y} + (${cabinet_height} /2) + (${thickness} /2)", "${z} - (${cabinet_depth}/2) + (${back_thickness} /2) "],
-      "rotation": [0, 0, 90]
-    }
-  ]
+  "assembly": {
+    "name": "cabinet1",
+    "parts": [
+      {
+        "id": "unterboden",
+        "geometryReference": "A",
+        "position": ["${x}", "${y}", "${z}"],
+        "rotation": [90, 0, 90]
+      },
+      {
+        "id": "oberboden",
+        "geometryReference": "A",
+        "position": ["${x}", "${y} + ${cabinet_height} + ${thickness}", "${z}"],
+        "rotation": [90, 0, 90]
+      },
+      {
+        "id": "seite_links",
+        "geometryReference": "B",
+        "position": ["${x} - (${cabinet_width} /2) + (${thickness} /2)", "${y} + (${cabinet_height} /2) + (${thickness} /2)", "${z}"],
+        "rotation": [0, 90, 90]
+      },
+      {
+        "id": "seite_rechts",
+        "geometryReference": "B",
+        "position": ["${x} + (${cabinet_width} /2) - (${thickness} /2)", "${y} + (${cabinet_height} /2) + (${thickness} /2)", "${z}"],
+        "rotation": [0, 90, 90]
+      },
+      {
+        "id": "rückwand",
+        "geometryReference": "C",
+        "position": ["${x}", "${y} + (${cabinet_height} /2) + (${thickness} /2)", "${z} - (${cabinet_depth}/2) + (${back_thickness} /2) "],
+        "rotation": [0, 0, 90]
+      },
+      {
+        "id": "test",
+        "geometryReference": "D",
+        "position": [0, 0, 0],
+        "rotation": [0, 0, 0]
+      }
+    ]
+
+
+  }
 }
