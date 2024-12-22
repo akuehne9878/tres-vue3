@@ -66,19 +66,24 @@
         "geometryReference": "C",
         "position": ["${x}", "${y} + (${cabinet_height} /2) + (${thickness} /2)", "${z} - (${cabinet_depth}/2) + (${back_thickness} /2) "],
         "rotation": [0, 0, 90]
-      },
-      {
-        "id": "test",
-        "geometryReference": "D",
-        "position": [0, 0, 0],
-        "rotation": [0, 0, 0]
-      },
-      { 
-        "id": "beschriftung", 
-        "geometryReference": "E", 
-        "position": [0, 0, 0], 
-        "rotation": [0, 0, 90] 
       }
-    ]
+    ],
+    "children": [{
+        "name": "bemaßung",
+        "parts": [
+          {
+            "id": "test",
+            "geometryReference": "D",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0]
+          },
+          { 
+            "id": "beschriftung", 
+            "geometryReference": "E", 
+            "position": [0, 0, 0], 
+            "rotation": [0, 0, 90] 
+          }
+        ]
+    }]
   }
 }
