@@ -3,9 +3,9 @@
     <header class="header">My App</header>
     <div class="content">
       <nav class="navigator">
-        <Navigator v-if="model !== undefined" :assemblies="[model.assembly]" />
+        <Navigator v-if="model !== undefined" :assemblies="model.assemblies" @current-assembly-changed="currentAssemblyChanged" />
       </nav>
-      <main class="main-content">
+      <main class="main-content" >
         <div class="canvas-container">
           <TresCanvas preset="realistic" class="tres-canvas">
             <OrbitControls />
@@ -13,7 +13,7 @@
             <TresAmbientLight intensity="0.7" />
             <TresDirectionalLight :position="[1000, 1000, 500]" intensity="0.8" />
 
-            <TresGroup v-if="model !== undefined" v-for="assembly in model?.assembly ? [model.assembly] : []" :key="assembly.name">
+            <TresGroup v-if="model !== undefined" v-for="assembly in model?.assemblies ? model.assemblies : []" :key="assembly.key">
               <AssemblyRenderer :assembly="assembly" />
             </TresGroup>
 
@@ -22,7 +22,7 @@
         </div>
       </main>
       <aside class="sidebar">
-        <!-- Additional information or controls can go here -->
+       <Detail :element="selectedElement" @name-updated="updateElementName" @position-updated="updateElementPosition" @rotation-updated="updateElementRotation" />
       </aside>
     </div>
   </div>
@@ -35,10 +35,36 @@ import { OrbitControls } from '@tresjs/cientos';
 import { loadModel, model } from './composables';
 import AssemblyRenderer from './AssemblyRenderer.vue';
 import Navigator from './Navigator.vue';
+import Detail from './Detail.vue';
+import { Assembly, Part } from './types';
 
 onMounted(() => {
   loadModel('/src/components.json');
 });
+
+let selectedElement = ref<Assembly | Part | null>(null);
+
+function currentAssemblyChanged(element: Assembly | Part) {
+  selectedElement.value = element;
+}
+
+function updateElementName(newName: string) {
+  if (selectedElement.value) {
+    selectedElement.value.name = newName;
+  }
+}
+
+function updateElementPosition(newPosition: [number, number, number]) {
+  if (selectedElement.value) {
+    selectedElement.value.position = newPosition;
+  }
+}
+
+function updateElementRotation(newRotation: [number, number, number]) {
+  if (selectedElement.value) {
+    selectedElement.value.rotation = newRotation;
+  }
+}
 </script>
 
 <style scoped>

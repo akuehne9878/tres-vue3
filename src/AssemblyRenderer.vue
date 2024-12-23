@@ -1,6 +1,6 @@
 <template>
     <TresGroup :position="computePosition(assembly.position)" :rotation="degreesToRadians(assembly.rotation)" >
-        <template v-for="part in assembly.parts" :key="part.id">
+        <template v-for="part in assembly.parts" :key="part.name">
             <TresMesh
                 v-if="getGeometry(part.geometryReference)?.geometry !== 'Line' && getGeometry(part.geometryReference)?.geometry !== 'Text'"
                 :object="createGeometry(part.geometryReference)" :position="computePosition(part.position)"
@@ -21,7 +21,7 @@
                 </Text3D>
             </Suspense>
         </template>
-        <template v-for="childAssembly in assembly.children || []" :key="childAssembly.name">
+        <template v-for="childAssembly in assembly.assemblies || []" :key="childAssembly.key">
             <AssemblyRenderer :assembly="childAssembly" />
         </template>
     </TresGroup>

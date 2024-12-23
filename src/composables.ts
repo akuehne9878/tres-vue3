@@ -80,3 +80,5 @@ export const createLineGeometry = (geometryReference: string) => {
   return new Line(lineGeometry, new LineBasicMaterial({ color: 0x0000ff }));
 };
 export const lineMaterial = new LineBasicMaterial({ color: 0x000000 });
+
+export let currAssembly = ref<Assembly>();

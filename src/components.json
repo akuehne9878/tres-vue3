@@ -34,35 +34,40 @@
       "args": ["Sample Text", 100, 10]
     }
   },
-  "assembly": {
+  "assemblies": [{
     "name": "cabinet1",
     "parts": [
       {
-        "id": "unterboden",
+        "key": "0",
+        "name": "unterboden",
         "geometryReference": "A",
         "position": ["${x}", "${y}", "${z}"],
         "rotation": [90, 0, 90]
       },
       {
-        "id": "oberboden",
+        "key": "1",
+        "name": "oberboden",
         "geometryReference": "A",
         "position": ["${x}", "${y} + ${cabinet_height} + ${thickness}", "${z}"],
         "rotation": [90, 0, 90]
       },
       {
-        "id": "seite_links",
+        "key": "2",
+        "name": "seite_links",
         "geometryReference": "B",
         "position": ["${x} - (${cabinet_width} /2) + (${thickness} /2)", "${y} + (${cabinet_height} /2) + (${thickness} /2)", "${z}"],
         "rotation": [0, 90, 90]
       },
       {
-        "id": "seite_rechts",
+        "key": "3",
+        "name": "seite_rechts",
         "geometryReference": "B",
         "position": ["${x} + (${cabinet_width} /2) - (${thickness} /2)", "${y} + (${cabinet_height} /2) + (${thickness} /2)", "${z}"],
         "rotation": [0, 90, 90]
       },
       {
-        "id": "rückwand",
+        "key": "4",
+        "name": "rückwand",
         "geometryReference": "C",
         "position": ["${x}", "${y} + (${cabinet_height} /2) + (${thickness} /2)", "${z} - (${cabinet_depth}/2) + (${back_thickness} /2) "],
         "rotation": [0, 0, 90]
@@ -70,17 +75,19 @@
     ],
     "position": ["${x}", "${y}", "${z}"],
     "rotation": [0, 0, 0],
-    "children": [{
+    "assemblies": [{
         "name": "bemaßung",
         "parts": [
           {
-            "id": "line",
+            "key": "5",
+            "name": "line",
             "geometryReference": "D",
             "position": [0, 0, 0],
             "rotation": [0, 0, 90]
           },
           { 
-            "id": "beschriftung", 
+            "key": "6",
+            "name": "beschriftung", 
             "geometryReference": "E", 
             "position": [0, 0, 0], 
             "rotation": [0, 0, 0] 
@@ -89,5 +96,5 @@
         "position": ["${x}", "${y}", "${z}"],
         "rotation": [0, 0, 90]
     }]
-  }
+  }]
 }
