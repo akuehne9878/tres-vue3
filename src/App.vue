@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
-    <header class="header">My App</header>
+    <header class="header">
+      <span>My App</span>
+      <button @click="saveJson">Speichern</button>
+    </header>
     <div class="content">
       <nav class="navigator">
         <Navigator v-if="model !== undefined" :assemblies="model.assemblies" @current-assembly-changed="currentAssemblyChanged" />
@@ -65,6 +68,17 @@ function updateElementRotation(newRotation: [number, number, number]) {
     selectedElement.value.rotation = newRotation;
   }
 }
+
+function saveJson() {
+  const jsonContent = JSON.stringify(model.value, null, 2);
+  const blob = new Blob([jsonContent], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'components.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 </script>
 
 <style scoped>
@@ -75,10 +89,26 @@ function updateElementRotation(newRotation: [number, number, number]) {
 }
 
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background-color: #333;
   color: white;
   padding: 10px;
+}
+
+.header button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
   text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
 .content {
