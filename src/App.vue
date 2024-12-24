@@ -6,9 +6,9 @@
     </header>
     <div class="content">
       <nav class="navigator">
-        <Navigator v-if="model !== undefined" :assemblies="model.assemblies" @current-assembly-changed="currentAssemblyChanged" />
+        <Navigator v-if="model !== undefined" :assemblies="model.assemblies" :parameters="model.parameters" @current-assembly-changed="currentAssemblyChanged" @current-parameter-changed="currentParameterChanged" />
       </nav>
-      <main class="main-content" >
+      <main class="main-content">
         <div class="canvas-container">
           <TresCanvas preset="realistic" class="tres-canvas">
             <OrbitControls />
@@ -16,7 +16,7 @@
             <TresAmbientLight intensity="0.7" />
             <TresDirectionalLight :position="[1000, 1000, 500]" intensity="0.8" />
 
-            <TresGroup v-if="model !== undefined" v-for="assembly in model?.assemblies ? model.assemblies : []" :key="assembly.key">
+            <TresGroup v-if="computedAssemblies" v-for="assembly in computedAssemblies" :key="assembly.key">
               <AssemblyRenderer :assembly="assembly" />
             </TresGroup>
 
@@ -25,30 +25,37 @@
         </div>
       </main>
       <aside class="sidebar">
-       <Detail :element="selectedElement" @name-updated="updateElementName" @position-updated="updateElementPosition" @rotation-updated="updateElementRotation" />
+       <Detail :element="selectedElement" :parameter="selectedParameter" @name-updated="updateElementName" @position-updated="updateElementPosition" @rotation-updated="updateElementRotation" @parameter-updated="updateParameter" />
       </aside>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { TresCanvas } from '@tresjs/core';
 import { OrbitControls } from '@tresjs/cientos';
-import { loadModel, model } from './composables';
+import { loadModel, model, replaceParameters, createParametersMap, computePosition, computeArgs, getGeometry } from './composables';
 import AssemblyRenderer from './AssemblyRenderer.vue';
 import Navigator from './Navigator.vue';
 import Detail from './Detail.vue';
-import { Assembly, Part } from './types';
+import { Assembly, Part, Parameter } from './types';
 
 onMounted(() => {
   loadModel('/src/components.json');
 });
 
 let selectedElement = ref<Assembly | Part | null>(null);
+let selectedParameter = ref<Parameter | null>(null);
 
 function currentAssemblyChanged(element: Assembly | Part) {
   selectedElement.value = element;
+  selectedParameter.value = null; // Deselect parameter
+}
+
+function currentParameterChanged(parameter: Parameter) {
+  selectedParameter.value = parameter;
+  selectedElement.value = null; // Deselect element
 }
 
 function updateElementName(newName: string) {
@@ -68,6 +75,50 @@ function updateElementRotation(newRotation: [number, number, number]) {
     selectedElement.value.rotation = newRotation;
   }
 }
+
+function updateParameter(updatedParam: { name: string; value: string | number; unit: string }) {
+  if (selectedParameter.value) {
+    selectedParameter.value.name = updatedParam.name;
+    selectedParameter.value.value = updatedParam.value;
+    selectedParameter.value.unit = updatedParam.unit;
+
+    createParametersMap();
+  }
+}
+
+const computedParametersMap = computed(() => {
+  const parametersMap: Record<string, number> = {};
+  model.value?.parameters.forEach(param => {
+    parametersMap[param.name] = eval(replaceParameters(param.value.toString(), parametersMap));
+  });
+  return parametersMap;
+});
+
+const computedAssemblies = computed(() => {
+  if (!model.value) return [];
+  return model.value.assemblies.map(assembly => ({
+    ...assembly,
+    position: computePosition(assembly.position, computedParametersMap.value),
+    rotation: computePosition(assembly.rotation, computedParametersMap.value),
+    parts: assembly.parts.map(part => ({
+      ...part,
+      position: computePosition(part.position, computedParametersMap.value),
+      rotation: computePosition(part.rotation, computedParametersMap.value),
+      args: computeArgs(getGeometry(part.geometryReference), computedParametersMap.value),
+    })),
+    assemblies: assembly.assemblies?.map(subAssembly => ({
+      ...subAssembly,
+      position: computePosition(subAssembly.position, computedParametersMap.value),
+      rotation: computePosition(subAssembly.rotation, computedParametersMap.value),
+      parts: subAssembly.parts.map(part => ({
+        ...part,
+        position: computePosition(part.position, computedParametersMap.value),
+        rotation: computePosition(part.rotation, computedParametersMap.value),
+        args: computeArgs(getGeometry(part.geometryReference), computedParametersMap.value),
+      })),
+    }))
+  }));
+});
 
 function saveJson() {
   const jsonContent = JSON.stringify(model.value, null, 2);

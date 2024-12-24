@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { BoxGeometry, CylinderGeometry, BufferGeometry, EdgesGeometry, LineBasicMaterial, Line, Vector3, Float32BufferAttribute, MeshBasicMaterial, Mesh } from 'three';
 import { Assembly, Part, Parameter, Model, Geometry } from './types';
 
@@ -20,33 +20,33 @@ export const createParametersMap = () => {
   });
 };
 
-export const replaceParameters = (str: string) => {
+export const replaceParameters = (str: string, customParams: Record<string, number> = parametersMap.value) => {
   const regex = /\$\{(\w+)\}/g;
   return str.replace(regex, (_, key) => {
-    return parametersMap.value[key]?.toString() || '0';
+    return customParams[key]?.toString() || '0';
   });
 };
 
-export const computeArgs = (geometry: Geometry | undefined): any[] => {
+export const computeArgs = (geometry: Geometry | undefined, customParams: Record<string, number> = parametersMap.value): any[] => {
   return geometry?.args.map(arg => {
     if (Array.isArray(arg)) {
-      return arg.map(innerArg => (typeof innerArg === 'string' ? eval(replaceParameters(innerArg)) : innerArg));
+      return arg.map(innerArg => (typeof innerArg === 'string' ? eval(replaceParameters(innerArg, customParams)) : innerArg));
     }
 
     if (typeof arg === 'string' && arg.includes('$')) {
-      return eval(replaceParameters(arg));
+      return eval(replaceParameters(arg, customParams));
     }
     return arg;
   }) || [];
 };
 
-export const computePosition = (pos: (number | string)[]): [number, number, number] => {
+export const computePosition = (pos: (number | string)[], customParams: Record<string, number> = parametersMap.value): [number, number, number] => {
   return pos.map(p =>
-    typeof p === 'string' ? eval(replaceParameters(p)) : p
+    typeof p === 'string' ? eval(replaceParameters(p, customParams)) : p
   ) as [number, number, number];
 };
 
-export const degreesToRadians = (degrees: number[]): [number, number, number] => {
+export const degreesToRadians = (degrees: number[], customParams: Record<string, number> = parametersMap.value): [number, number, number] => {
   return degrees.map(d => (d * Math.PI) / 180) as [number, number, number];
 };
 
@@ -55,13 +55,13 @@ export const getEdgesGeometry = (geometryReference: string) => {
   return new EdgesGeometry(geometry);
 };
 
-export const getGeometry = (geometryReference: string): Geometry | undefined => {
+export const getGeometry = (geometryReference: string, customParams: Record<string, number> = parametersMap.value): Geometry | undefined => {
   return model.value?.geometries[geometryReference];
 }
 
-export const createGeometry = (geometryReference: string): BufferGeometry => {
-  const geometry = getGeometry(geometryReference);
-  const args = computeArgs(geometry);
+export const createGeometry = (geometryReference: string, customParams: Record<string, number> = parametersMap.value): BufferGeometry => {
+  const geometry = getGeometry(geometryReference, customParams);
+  const args = computeArgs(geometry, customParams);
   switch (geometry?.geometry) {
     case 'Box':
       return new BoxGeometry(...args);
