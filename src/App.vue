@@ -42,7 +42,7 @@ import Detail from './Detail.vue';
 import { Assembly, Part, Parameter } from './types';
 
 onMounted(() => {
-  loadModel('/src/components.json');
+  loadModel('/src/cabinet.json');
 });
 
 let selectedElement = ref<Assembly | Part | null>(null);
