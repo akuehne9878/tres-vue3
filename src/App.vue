@@ -25,7 +25,7 @@
         </div>
       </main>
       <aside class="sidebar">
-       <Detail :element="selectedElement" :parameter="selectedParameter" @name-updated="updateElementName" @position-updated="updateElementPosition" @rotation-updated="updateElementRotation" @parameter-updated="updateParameter" />
+       <Detail :element="selectedElement" :parameter="selectedParameter" @name-updated="updateElementName" @position-updated="updateElementPosition" @rotation-updated="updateElementRotation" @parameter-updated="updateParameter" @add-parameter="addParameter" />
       </aside>
     </div>
   </div>
@@ -35,7 +35,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { TresCanvas } from '@tresjs/core';
 import { OrbitControls } from '@tresjs/cientos';
-import { loadModel, model, replaceParameters, createParametersMap, computePosition, computeArgs, getGeometry } from './composables';
+import { loadModel, model, replaceParameters, createParametersMap, computePosition, computeRotation, computeArgs, getGeometry } from './composables';
 import AssemblyRenderer from './AssemblyRenderer.vue';
 import Navigator from './Navigator.vue';
 import Detail from './Detail.vue';
@@ -86,6 +86,13 @@ function updateParameter(updatedParam: { name: string; value: string | number; u
   }
 }
 
+function addParameter(newParam: { name: string; value: string | number; unit: string }) { 
+  if (model.value) { 
+    model.value.parameters.push(newParam); 
+    createParametersMap();
+  }
+ }
+
 const computedParametersMap = computed(() => {
   const parametersMap: Record<string, number> = {};
   model.value?.parameters.forEach(param => {
@@ -99,21 +106,21 @@ const computedAssemblies = computed(() => {
   return model.value.assemblies.map(assembly => ({
     ...assembly,
     position: computePosition(assembly.position, computedParametersMap.value),
-    rotation: computePosition(assembly.rotation, computedParametersMap.value),
+    rotation: computeRotation(assembly.rotation, computedParametersMap.value),
     parts: assembly.parts.map(part => ({
       ...part,
       position: computePosition(part.position, computedParametersMap.value),
-      rotation: computePosition(part.rotation, computedParametersMap.value),
+      rotation: computeRotation(part.rotation, computedParametersMap.value),
       args: computeArgs(getGeometry(part.geometryReference), computedParametersMap.value),
     })),
     assemblies: assembly.assemblies?.map(subAssembly => ({
       ...subAssembly,
       position: computePosition(subAssembly.position, computedParametersMap.value),
-      rotation: computePosition(subAssembly.rotation, computedParametersMap.value),
+      rotation: computeRotation(subAssembly.rotation, computedParametersMap.value),
       parts: subAssembly.parts.map(part => ({
         ...part,
         position: computePosition(part.position, computedParametersMap.value),
-        rotation: computePosition(part.rotation, computedParametersMap.value),
+        rotation: computeRotation(part.rotation, computedParametersMap.value),
         args: computeArgs(getGeometry(part.geometryReference), computedParametersMap.value),
       })),
     }))

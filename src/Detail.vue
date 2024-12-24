@@ -41,6 +41,16 @@
         <label for="param-unit">Einheit:</label>
         <input type="text" id="param-unit" v-model="paramUnit" @input="updateParameter" />
       </div>
+      <div> 
+        <h4>Neuen Parameter hinzufügen</h4> 
+        <label for="new-param-name">Name:</label> 
+        <input type="text" id="new-param-name" v-model="newParam.name" /> 
+        <label for="new-param-value">Wert:</label> 
+        <input type="text" id="new-param-value" v-model="newParam.value" />
+         <label for="new-param-unit">Einheit:</label>
+          <input type="text" id="new-param-unit" v-model="newParam.unit" /> 
+          <button @click="addParameter">Hinzufügen</button> 
+        </div>
     </div>
   </template>
   
@@ -54,7 +64,7 @@
     parameter: Parameter | null;
   }>();
   
-  const emit = defineEmits(['name-updated', 'position-updated', 'rotation-updated', 'parameter-updated']);
+  const emit = defineEmits(['name-updated', 'position-updated', 'rotation-updated', 'parameter-updated', 'add-parameter']);
   
   const name = ref('');
   const position = ref({ x: '', y: '', z: '' });
@@ -63,6 +73,8 @@
   const paramName = ref('');
   const paramValue = ref('');
   const paramUnit = ref('');
+
+  const newParam = ref({ name: '', value: '', unit: '' });
   
   watch(
     () => props.element,
@@ -119,6 +131,13 @@
   function updateParameter() {
     emit('parameter-updated', { name: paramName.value, value: paramValue.value, unit: paramUnit.value });
   }
+
+  function addParameter() { 
+    emit('add-parameter', { name: newParam.value.name, value: newParam.value.value, unit: newParam.value.unit }); 
+    newParam.value = { name: '', value: '', unit: '' }; 
+  }
+
+
   </script>
   
   <style scoped>

@@ -46,6 +46,12 @@ export const computePosition = (pos: (number | string)[], customParams: Record<s
   ) as [number, number, number];
 };
 
+export const computeRotation = (pos: (number | string)[], customParams: Record<string, number> = parametersMap.value): [number, number, number] => {
+  return pos.map(p =>
+    typeof p === 'string' ? eval(replaceParameters(p, customParams)) : p
+  ) as [number, number, number];
+};
+
 export const degreesToRadians = (degrees: number[], customParams: Record<string, number> = parametersMap.value): [number, number, number] => {
   return degrees.map(d => (d * Math.PI) / 180) as [number, number, number];
 };
